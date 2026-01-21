@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servo Joystick Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 15px;
+            overflow-x: auto;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Check out the code here</h1>
+
+    <pre><code>
+#include &lt;Servo.h&gt;
+
+#define VRX_PIN A0
+#define VRY_PIN A1
+#define BUTTON_PIN 9
+
+const int Tilt_Servo_Pin = 12;
+const int Pan_Servo_Pin = 13;
+
+Servo Tilt_Servo_Motor;
+Servo Pan_Servo_Motor;
+
+int Tilt_Servo_Angle = 30;
+int Pan_Servo_Angle = 90;
+
+void lookup() {
+  Tilt_Servo_Motor.write(120);
+  Pan_Servo_Motor.write(90);
+}
+
+void lookdown() {
+  Tilt_Servo_Motor.write(0);
+  Pan_Servo_Motor.write(90);
+}
+
+void turnleft() {
+  Pan_Servo_Motor.write(180);
+}
+
+void turnright() {
+  Pan_Servo_Motor.write(0);
+}
+
+void setToNeutral() {
+  Tilt_Servo_Motor.write(Tilt_Servo_Angle);
+  Pan_Servo_Motor.write(Pan_Servo_Angle);
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(VRX_PIN, INPUT);
+  pinMode(VRY_PIN, INPUT);
+
+  Tilt_Servo_Motor.attach(Tilt_Servo_Pin);
+  Pan_Servo_Motor.attach(Pan_Servo_Pin);
+
+  Tilt_Servo_Motor.write(Tilt_Servo_Angle);
+  Pan_Servo_Motor.write(Pan_Servo_Angle);
+}
+
+void loop() {
+  int xValue = analogRead(VRX_PIN);
+  int yValue = analogRead(VRY_PIN);
+  int buttonState = digitalRead(BUTTON_PIN);
+
+  Serial.print("Joystick X Value: ");
+  Serial.println(xValue);
+  delay(100);
+
+  Serial.print("Joystick Y Value: ");
+  Serial.println(yValue);
+  delay(100);
+
+  Serial.print("Button State: ");
+  Serial.println(buttonState);
+  delay(100);
+
+  if (xValue == 0) {
+    turnright();
+  } else if (xValue > 1000) {
+    turnleft();
+  } else if (yValue > 1000) {
+    lookdown();
+  } else if (yValue == 0) {
+    lookup();
+  } else if (buttonState == 0) {
+    setToNeutral();
+  }
+}
+    </code></pre>
+
+</body>
+</html>
